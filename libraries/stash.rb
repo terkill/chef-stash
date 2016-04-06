@@ -49,8 +49,14 @@ EOH
     # @return [Hash] Settings hash
     def settings_from_data_bag
       begin
-        item = data_bag_item(node['stash']['data_bag_name'],
-                             node['stash']['data_bag_item'])['stash']
+        item =
+          if defined?(chef_vault_item)
+            chef_vault_item(node['stash']['data_bag_name'],
+                            node['stash']['data_bag_item'])['stash']
+          else
+            data_bag_item(node['stash']['data_bag_name'],
+                          node['stash']['data_bag_item'])['stash']
+          end
         return item if item.is_a?(Hash)
       rescue
         Chef::Log.info('No stash data bag found')
